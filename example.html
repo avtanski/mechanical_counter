@@ -12,17 +12,17 @@
         let timer1 = null
 
         function init() {
-            timer1 = new MechanicalCounter(document.getElementById('box1'), 4, 2)
+            timer1 = new MechanicalCounter(document.getElementById('box1'), 4, 2, 'audio')
             timer1.setValue(value, true)
-            let timer2 = new MechanicalCounter(document.getElementById('box2'), 4, 2, 1)
+            let timer2 = new MechanicalCounter(document.getElementById('box2'), 4, 2, 'audio', 1)
             timer2.setValue(9999999123.45, true)
-            let timer3 = new MechanicalCounter(document.getElementById('box3'), 4, 2, 2)
+            let timer3 = new MechanicalCounter(document.getElementById('box3'), 4, 2, 'audio', 2)
             timer3.setValue(-3.45, true)
             setInterval(function() {value += 0.20; timer1.setValue(value)}, 2000)
         }
     </script>
 </head>
-<body onload="init()" style="background: #FC0; padding: 20px;">
+<body onload="init()" style="background: #FC0; padding: 20px;" onclick="timer1.enableAudio(!timer1.audioOn)">
 <div class="box" id="box1" style="padding: 20px"></div>
 <div class="box" id="box2" style="padding: 20px"></div>
 <div class="box" id="box3" style="padding: 20px"></div>

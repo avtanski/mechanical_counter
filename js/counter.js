@@ -24,7 +24,7 @@ const U = {
 }
 
 const MechanicalCounter = function(parent, digitsBeforeDecimal, digitsAfterDecimal,
-                                   size, decimalPointCharacter, wonkiness) {
+                                   audioFilesPath, size, decimalPointCharacter, wonkiness) {
 
     const sizes = [
         {
@@ -65,6 +65,7 @@ const MechanicalCounter = function(parent, digitsBeforeDecimal, digitsAfterDecim
         }
     ]
 
+    this.audioPath = audioFilesPath
     this.size = Math.min(Math.max(Math.floor(size || 0),0), sizes.length)
     this.wonkiness = wonkiness || 0.1
     this.s = sizes[this.size]
@@ -73,10 +74,13 @@ const MechanicalCounter = function(parent, digitsBeforeDecimal, digitsAfterDecim
     this.nAD = digitsAfterDecimal || 0
     this.dpChar = decimalPointCharacter || ','
     this.value = 0
+    this.audioOn = false
 
     this.aperture = null
     this.dBD = []
     this.dAD = []
+    this.rollAudio = null
+    this.multipleRollAudio = null
 
     this.setValue = function(value, jump) {
         let backwards = Math.abs(value) < Math.abs(this.value)
@@ -93,8 +97,13 @@ const MechanicalCounter = function(parent, digitsBeforeDecimal, digitsAfterDecim
                 if (c.flap) flaps += c.flap
                 if (c.roll) rolls += c.roll
                 if (c.roll_distance) max_roll_distance = Math.max(c.roll_distance, max_roll_distance)
+                if (this.audioOn && rolls && this.audioPath) (rolls > 1 ? this.multipleRollAudio : this.rollAudio).play()
             }
         }
+    }
+
+    this.enableAudio = function(enabled) {
+        this.audioOn = enabled
     }
 
     this.init = function() {
@@ -116,6 +125,10 @@ const MechanicalCounter = function(parent, digitsBeforeDecimal, digitsAfterDecim
             for (let i=0; i<this.nAD; i++) this.dAD.push(new Roller(this.aperture, this.s, this.wonkiness))
         }
         this.setValue(0, true)
+        if (this.audioPath) {
+            this.rollAudio = new Audio(this.audioPath + '/roll.wav')
+            this.multipleRollAudio = new Audio(this.audioPath + '/roll_m.wav')
+        }
     }
 
     this.setRollerSegment = function(rollers, s, negative, jump, backwards) {
