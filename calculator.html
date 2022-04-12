@@ -69,6 +69,7 @@
         function action(e) {
             click.play()
             let a = e.srcElement.getAttribute('action')
+            e.srcElement.blur()
             switch (a) {
                 case 'c':
                     if (operand == '') {
@@ -125,8 +126,8 @@
         }
 
         function init() {
-            resultCounter = new MechanicalCounter(document.getElementById('result_div'), 8, 2, 'audio')
-            operandCounter = new MechanicalCounter(document.getElementById('operand_div'), 8, 2, 'audio', 2)
+            resultCounter = new MechanicalCounter(document.getElementById('result_div'), 7, 2, 'audio')
+            operandCounter = new MechanicalCounter(document.getElementById('operand_div'), 7, 2, 'audio', 2)
             hookUpButtons()
             document.addEventListener(
                 'keydown',
