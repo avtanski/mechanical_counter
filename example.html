@@ -8,13 +8,17 @@
     <script language="JavaScript">
         "use strict";
 
+        let value = 1.0
+        let timer1 = null
+
         function init() {
-            let timer1 = new MechanicalCounter(document.getElementById('box1'), 4, 2)
-            timer1.setValue(123.45)
+            timer1 = new MechanicalCounter(document.getElementById('box1'), 4, 2)
+            timer1.setValue(value, true)
             let timer2 = new MechanicalCounter(document.getElementById('box2'), 4, 2, 1)
-            timer2.setValue(123.45)
+            timer2.setValue(123.45, true)
             let timer3 = new MechanicalCounter(document.getElementById('box3'), 4, 2, 2)
-            timer3.setValue(123.45)
+            timer3.setValue(123.45, true)
+            setInterval(function() {value -= 0.2; timer1.setValue(value)}, 2000)
         }
     </script>
 </head>

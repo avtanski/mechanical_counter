@@ -23,7 +23,8 @@ const U = {
     }
 }
 
-const MechanicalCounter = function(parent, digitsBeforeDecimal, digitsAfterDecimal, size, decimalPointCharacter) {
+const MechanicalCounter = function(parent, digitsBeforeDecimal, digitsAfterDecimal,
+                                   size, decimalPointCharacter, wonkiness) {
 
     const sizes = [
         {
@@ -65,21 +66,24 @@ const MechanicalCounter = function(parent, digitsBeforeDecimal, digitsAfterDecim
     ]
 
     this.size = Math.min(Math.max(Math.floor(size || 0),0), sizes.length)
+    this.wonkiness = wonkiness || 0.1
     this.s = sizes[this.size]
     this.parent = parent
     this.nBD = digitsBeforeDecimal || 4
     this.nAD = digitsAfterDecimal || 0
     this.dpChar = decimalPointCharacter || ','
-    this.value = ''
+    this.value = 0
 
     this.aperture = null
     this.dBD = []
     this.dAD = []
 
     this.setValue = function(value, jump) {
+        let backwards = Math.abs(value) < Math.abs(this.value)
+        this.value = value
         let ba = value.toFixed(this.nAD).split('.')
-        let changes = this.jsGo(this.dBD, ba[0], jump)
-        if (ba.length > 1) changes = changes.concat(this.jsGo(this.dAD, ba[1], jump))
+        let changes = this.setRollerSegment(this.dBD, ba[0], jump, backwards)
+        if (ba.length > 1) changes = changes.concat(this.setRollerSegment(this.dAD, ba[1], jump, backwards))
         if (!jump) {
             let flaps = 0
             let rolls = 0
@@ -89,7 +93,6 @@ const MechanicalCounter = function(parent, digitsBeforeDecimal, digitsAfterDecim
                 if (c.flap) flaps += c.flap
                 if (c.roll) rolls += c.roll
                 if (c.roll_distance) max_roll_distance = Math.max(c.roll_distance, max_roll_distance)
-                console.log(flaps, rolls, max_roll_distance)
             }
         }
     }
@@ -103,38 +106,43 @@ const MechanicalCounter = function(parent, digitsBeforeDecimal, digitsAfterDecim
         this.aperture.style['padding'] = this.s.aperture_padding
         this.aperture.style['gap'] = this.s.aperture_gap
         for (let i=0; i<this.nBD; i++) {
-            this.dBD.push(new Roller(this.aperture, this.s))
+            this.dBD.push(new Roller(this.aperture, this.s, this.wonkiness))
         }
         if (this.nAD) {
             let dp = U.a(this.aperture, 'div', {class: 'counter_decimal_point'}, this.dpChar)
             dp.style['font-size'] = this.s.font_size
             dp.style['padding'] = this.s.decimal_point_padding
             dp.style['height'] = this.s.roller_height
-            for (let i=0; i<this.nAD; i++) this.dAD.push(new Roller(this.aperture, this.s))
+            for (let i=0; i<this.nAD; i++) this.dAD.push(new Roller(this.aperture, this.s, this.wonkiness))
         }
         this.setValue(0, true)
     }
 
-    this.jsGo = function(rollers, s, jump) {
+    this.setRollerSegment = function(rollers, s, jump, backwards) {
         let changes = []
         if (s.length < rollers.length) {
             s = ' '.repeat(rollers.length - s.length) + s
         }
         for (let i = rollers.length - 1; i >= 0; i--) {
-            changes.push(rollers[i].go(s.charAt(i), jump))
+            changes.push(rollers[i].go(s.charAt(i), jump, backwards))
         }
         return changes
     }
 
-    const Roller = function(div, s) {
+    const Roller = function(div, s, wonkiness) {
 
         this.C = '01234567890'
         this.div = div
         this.s = s
+        this.wonkiness = wonkiness
         this.digitsDiv = null
         this.position = null
+        this.wonkyPosition = null
+        this.jumpPositions = []
+        this.moveCL = null
 
         this.init = function() {
+            this.moveCL = this.move.bind(this)
             let rDiv = U.a(this.div, 'div', {class: 'counter_roller'})
             rDiv.style['height'] = this.s.roller_height
             rDiv.style['width'] = this.s.roller_width
@@ -148,27 +156,49 @@ const MechanicalCounter = function(parent, digitsBeforeDecimal, digitsAfterDecim
             }
         }
 
-        this.go = function(pos, jump) {
+        this.go = function(pos, jump, backwards, speed) {
+            speed = speed || 0.13
             let oldPosition = this.position
             let changes = {flap: 0, roll: 0, roll_distance: 0}
             if (('' + pos).trim().length != 1) {
                 this.position = -1
             } else {
-                this.position = 0 + pos
+                this.position = parseInt(pos)
             }
             if (oldPosition == this.position) return changes
+            let oldWonkyPosition = this.wonkyPosition
+            this.wonkyPosition = this.position + Math.random() * 2 * this.wonkiness - this.wonkiness
             if (this.position == -1) {
                 this.digitsDiv.style.visibility = 'hidden'
                 changes.flap = 1
                 return changes
             }
-            if (this.oldPosition == -1) changes.flap = 1
+            if (oldPosition == -1) changes.flap = 1
             this.digitsDiv.style.visibility = 'visible'
-            this.digitsDiv.style.transform =
-                'translateY(' + (5 * this.s.digit_height_px - this.position * this.s.digit_height_px) + 'px)'
+            if (jump) {
+                this.jumpPositions.push(this.wonkyPosition)
+            } else {
+                let p = oldWonkyPosition
+                do {
+                    p += backwards ? -speed : speed
+                    if (p < 0) p += 10
+                    p = p % 10
+                    this.jumpPositions.push(p)
+                } while (Math.abs(p - this.wonkyPosition) > 2 * speed)
+                this.jumpPositions.push(this.wonkyPosition)
+            }
+            this.move()
+            changes.roll_distance = 1  // TODO
             changes.roll = 1
-            changes.roll_distance = Math.abs(this.position - oldPosition)
             return changes
+        }
+
+        this.move = function() {
+            if (!this.jumpPositions.length) return
+            let p = this.jumpPositions.shift()
+            this.digitsDiv.style.transform =
+                'translateY(' + (5 * this.s.digit_height_px - p * this.s.digit_height_px) + 'px)'
+            if (this.jumpPositions.length) setTimeout(this.moveCL, 10)
         }
 
         this.init()
