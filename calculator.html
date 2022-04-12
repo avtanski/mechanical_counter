@@ -11,22 +11,37 @@
             font-family: Arial, Helvetica, sans-serif;
             font-size: 30px;
         }
-
-        td {
-            width: 25%;
+        body {
+            background: #888;
         }
-
         #main {
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
         }
-
+        #calculator_div {
+            background: #FC0;
+            padding: 0px;
+            border-radius: 30px;
+            box-shadow: 0px 0px 30px 30px #0008;
+        }
+        #calculator_inner_div {
+            padding: 30px;
+            border-radius: 30px;
+            box-shadow: inset 0px 0px 5px 5px #0004;
+        }
         #logo_div, #result_div, #operand_div {
             display: flex;
             align-items: center;
             justify-content: flex-end;
+        }
+        #result_div {
+            padding-bottom: 30px;
+        }
+        .btn_td {
+            width: 25%;
+            text-align: center;
         }
     </style>
     <script language="JavaScript" src="js/counter.js"></script>
@@ -37,8 +52,9 @@
         let resultCounter = null
         let operandCounter = null
         let operator = null
-        let result = ''
+        let result = '0'
         let operand = ''
+        let click = new Audio('audio/click.wav')
 
         function hookUpButtons() {
             let buttonElements = document.getElementsByTagName('button')
@@ -51,11 +67,12 @@
         }
 
         function action(e) {
+            click.play()
             let a = e.srcElement.getAttribute('action')
             switch (a) {
                 case 'c':
                     if (operand == '') {
-                        result = ''
+                        result = '0'
                     } else {
                         operand = ''
                     }
@@ -85,6 +102,7 @@
                     break
                 case '=':
                     calculate()
+                    operator = ''
                     break
             }
             resultCounter.setValue(result == '' ? 0 : result)
@@ -92,7 +110,7 @@
         }
 
         function calculate() {
-            if (result == '' || operand == '' || operator === null) return
+            if (result == '' || operand == '') return
             let r = parseFloat(result)
             let o = parseFloat(operand)
             switch (operator) {
@@ -100,13 +118,15 @@
                 case '-': result = r - o; break
                 case '*': result = r * o; break
                 case '/': result = r / o; break
+                case null: result = o; break
             }
+            if (!isFinite(result)) result = '0'
             operand = ''
         }
 
         function init() {
-            resultCounter = new MechanicalCounter(document.getElementById('result_div'), 4, 2, 'audio')
-            operandCounter = new MechanicalCounter(document.getElementById('operand_div'), 4, 2, 'audio', 2)
+            resultCounter = new MechanicalCounter(document.getElementById('result_div'), 8, 2, 'audio')
+            operandCounter = new MechanicalCounter(document.getElementById('operand_div'), 8, 2, 'audio', 2)
             hookUpButtons()
             document.addEventListener(
                 'keydown',
@@ -126,40 +146,46 @@
         }
     </script>
 </head>
-<body onload="init()" style="background: #FC0; padding: 20px;">
-<div id="main">
-    <table>
-        <tr><td colspan="4"><div id="logo_div">MC-42</div></td></tr>
-        <tr><td colspan="4"><div id="result_div"></div></td></tr>
-        <tr>
-            <td><button class="mechanical_button red" action="c">C</button></td>
-            <td colspan="3"><div id="operand_div"></div></td>
-        </tr>
-        <tr>
-            <td><button class="mechanical_button" action="7">7</button></td>
-            <td><button class="mechanical_button" action="8">8</button></td>
-            <td><button class="mechanical_button" action="9">9</button></td>
-            <td><button class="mechanical_button" action="/">&#247;</button></td>
-        </tr>
-        <tr>
-            <td><button class="mechanical_button" action="4">4</button></td>
-            <td><button class="mechanical_button" action="5">5</button></td>
-            <td><button class="mechanical_button" action="6">6</button></td>
-            <td><button class="mechanical_button" action="*">&#215;</button></td>
-        </tr>
-        <tr>
-            <td><button class="mechanical_button" action="1">1</button></td>
-            <td><button class="mechanical_button" action="2">2</button></td>
-            <td><button class="mechanical_button" action="3">3</button></td>
-            <td><button class="mechanical_button" action="-">&minus;</button></td>
-        </tr>
-        <tr>
-            <td><button class="mechanical_button" action="0">0</button></td>
-            <td><button class="mechanical_button" action=".">.</button></td>
-            <td><button class="mechanical_button" action="=">&equals;</button></td>
-            <td><button class="mechanical_button" action="+">&plus;</button></td>
-        </tr>
-    </table>
-</div>
+<body onload="init()">
+    <div id="main">
+        <div id="calculator_div">
+            <div id="calculator_inner_div">
+                <table>
+                    <tr><td colspan="4"><div id="logo_div">MC-42</div></td></tr>
+                    <tr><td colspan="4"><div id="result_div"></div></td></tr>
+                    <tr>
+                        <td colspan="4"><div id="operand_div"></div></td>
+                    </tr>
+                    <tr>
+                        <td class="btn_td"><button class="mechanical_button red" action="c">C</button></td>
+                    </tr>
+                    <tr>
+                        <td class="btn_td"><button class="mechanical_button" action="7">7</button></td>
+                        <td class="btn_td"><button class="mechanical_button" action="8">8</button></td>
+                        <td class="btn_td"><button class="mechanical_button" action="9">9</button></td>
+                        <td class="btn_td"><button class="mechanical_button" action="/">&#247;</button></td>
+                    </tr>
+                    <tr>
+                        <td class="btn_td"><button class="mechanical_button" action="4">4</button></td>
+                        <td class="btn_td"><button class="mechanical_button" action="5">5</button></td>
+                        <td class="btn_td"><button class="mechanical_button" action="6">6</button></td>
+                        <td class="btn_td"><button class="mechanical_button" action="*">&#215;</button></td>
+                    </tr>
+                    <tr>
+                        <td class="btn_td"><button class="mechanical_button" action="1">1</button></td>
+                        <td class="btn_td"><button class="mechanical_button" action="2">2</button></td>
+                        <td class="btn_td"><button class="mechanical_button" action="3">3</button></td>
+                        <td class="btn_td"><button class="mechanical_button" action="-">&minus;</button></td>
+                    </tr>
+                    <tr>
+                        <td class="btn_td"><button class="mechanical_button" action="0">0</button></td>
+                        <td class="btn_td"><button class="mechanical_button" action=".">.</button></td>
+                        <td class="btn_td"><button class="mechanical_button" action="=">&equals;</button></td>
+                        <td class="btn_td"><button class="mechanical_button" action="+">&plus;</button></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
