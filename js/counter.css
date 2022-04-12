@@ -44,3 +44,23 @@
     align-items: center;
     justify-content: center;
 }
+
+.mechanical_button {
+    background: linear-gradient(0.5turn, #444, #333, #000, #444);
+    border-width: 5px;
+    border-radius: 35px;
+    height: 70px;
+    min-width: 70px;
+    color: #FFF;
+    font-weight: bold;
+    font-size: 30px;
+    padding: 0px 20px;
+}
+
+.red {
+    background: linear-gradient(0.5turn, #F64, #C43, #410, #F64);
+}
+
+.mechanical_button:active, .mechanical_button_active {
+    color: #888;
+}

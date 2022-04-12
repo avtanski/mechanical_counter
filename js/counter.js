@@ -35,7 +35,7 @@ const MechanicalCounter = function(parent, digitsBeforeDecimal, digitsAfterDecim
             font_size: '40px',
             roller_height: '70px',
             roller_width: '40px',
-            decimal_point_padding: '20px 0px',
+            decimal_point_padding: '20px 1px',
             digit_height: '60px',
             digit_height_px: 60
         },
@@ -47,7 +47,7 @@ const MechanicalCounter = function(parent, digitsBeforeDecimal, digitsAfterDecim
             font_size: '30px',
             roller_height: '50px',
             roller_width: '30px',
-            decimal_point_padding: '15px 0px',
+            decimal_point_padding: '12px 2px',
             digit_height: '40px',
             digit_height_px: 40
         },
@@ -59,22 +59,22 @@ const MechanicalCounter = function(parent, digitsBeforeDecimal, digitsAfterDecim
             font_size: '20px',
             roller_height: '35px',
             roller_width: '20px',
-            decimal_point_padding: '10px 0px',
+            decimal_point_padding: '10px 2px',
             digit_height: '30px',
             digit_height_px: 30
         }
     ]
 
+    this.parent = parent
     this.audioPath = audioFilesPath
     this.size = Math.min(Math.max(Math.floor(size || 0),0), sizes.length)
     this.wonkiness = wonkiness || 0.1
     this.s = sizes[this.size]
-    this.parent = parent
     this.nBD = digitsBeforeDecimal || 4
     this.nAD = digitsAfterDecimal || 0
     this.dpChar = decimalPointCharacter || ','
     this.value = 0
-    this.audioOn = false
+    this.audioOn = true
 
     this.aperture = null
     this.dBD = []
@@ -107,7 +107,6 @@ const MechanicalCounter = function(parent, digitsBeforeDecimal, digitsAfterDecim
     }
 
     this.init = function() {
-        U.c(this.parent)
         let wrapper = U.a(this.parent, 'div', {class: 'counter_wrapper'})
         this.aperture = U.a(wrapper, 'div', {class: 'counter_aperture'})
         this.aperture.style['border'] = this.s.aperture_border + ' solid #666'
@@ -229,4 +228,3 @@ const MechanicalCounter = function(parent, digitsBeforeDecimal, digitsAfterDecim
 
     this.init()
 }
-

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="js/counter.css">
+    <style>
+        body, div {
+            margin: 0px;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 30px;
+        }
+
+        td {
+            width: 25%;
+        }
+
+        #main {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        #logo_div, #result_div, #operand_div {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+    </style>
+    <script language="JavaScript" src="js/counter.js"></script>
+    <script language="JavaScript">
+        "use strict";
+
+        let buttons = {}
+        let resultCounter = null
+        let operandCounter = null
+        let operator = null
+        let result = ''
+        let operand = ''
+
+        function hookUpButtons() {
+            let buttonElements = document.getElementsByTagName('button')
+            for (let i=0; i<buttonElements.length; i++) {
+                let b = buttonElements[i]
+                let a = b.getAttribute('action')
+                if (a !== null && a !== undefined) buttons[a] = b
+                b.addEventListener('click', action)
+            }
+        }
+
+        function action(e) {
+            let a = e.srcElement.getAttribute('action')
+            switch (a) {
+                case 'c':
+                    if (operand == '') {
+                        result = ''
+                    } else {
+                        operand = ''
+                    }
+                    break
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                case '.':
+                    if (a == '.' && operand.indexOf('.') > -1) return
+                    operand += a
+                    break
+                case '+':
+                case '-':
+                case '*':
+                case '/':
+                    if (operator) calculate()
+                    if (operand != '') result = operand
+                    operand = ''
+                    operator = a
+                    break
+                case '=':
+                    calculate()
+                    break
+            }
+            resultCounter.setValue(result == '' ? 0 : result)
+            operandCounter.setValue(operand == '' ? 0 : operand)
+        }
+
+        function calculate() {
+            if (result == '' || operand == '' || operator === null) return
+            let r = parseFloat(result)
+            let o = parseFloat(operand)
+            switch (operator) {
+                case '+': result = r + o; break
+                case '-': result = r - o; break
+                case '*': result = r * o; break
+                case '/': result = r / o; break
+            }
+            operand = ''
+        }
+
+        function init() {
+            resultCounter = new MechanicalCounter(document.getElementById('result_div'), 4, 2, 'audio')
+            operandCounter = new MechanicalCounter(document.getElementById('operand_div'), 4, 2, 'audio', 2)
+            hookUpButtons()
+            document.addEventListener(
+                'keydown',
+                function(e) {
+                    if (buttons[e.key] !== undefined) {
+                        buttons[e.key].classList.add('mechanical_button_active')
+                        buttons[e.key].click()
+                    }
+                }
+            )
+            document.addEventListener(
+                'keyup',
+                function() {
+                    for (let c in buttons) buttons[c].classList.remove('mechanical_button_active')
+                }
+            )
+        }
+    </script>
+</head>
+<body onload="init()" style="background: #FC0; padding: 20px;">
+<div id="main">
+    <table>
+        <tr><td colspan="4"><div id="logo_div">MC-42</div></td></tr>
+        <tr><td colspan="4"><div id="result_div"></div></td></tr>
+        <tr>
+            <td><button class="mechanical_button red" action="c">C</button></td>
+            <td colspan="3"><div id="operand_div"></div></td>
+        </tr>
+        <tr>
+            <td><button class="mechanical_button" action="7">7</button></td>
+            <td><button class="mechanical_button" action="8">8</button></td>
+            <td><button class="mechanical_button" action="9">9</button></td>
+            <td><button class="mechanical_button" action="/">&#247;</button></td>
+        </tr>
+        <tr>
+            <td><button class="mechanical_button" action="4">4</button></td>
+            <td><button class="mechanical_button" action="5">5</button></td>
+            <td><button class="mechanical_button" action="6">6</button></td>
+            <td><button class="mechanical_button" action="*">&#215;</button></td>
+        </tr>
+        <tr>
+            <td><button class="mechanical_button" action="1">1</button></td>
+            <td><button class="mechanical_button" action="2">2</button></td>
+            <td><button class="mechanical_button" action="3">3</button></td>
+            <td><button class="mechanical_button" action="-">&minus;</button></td>
+        </tr>
+        <tr>
+            <td><button class="mechanical_button" action="0">0</button></td>
+            <td><button class="mechanical_button" action=".">.</button></td>
+            <td><button class="mechanical_button" action="=">&equals;</button></td>
+            <td><button class="mechanical_button" action="+">&plus;</button></td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
