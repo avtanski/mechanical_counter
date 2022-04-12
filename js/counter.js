@@ -81,9 +81,9 @@ const MechanicalCounter = function(parent, digitsBeforeDecimal, digitsAfterDecim
     this.setValue = function(value, jump) {
         let backwards = Math.abs(value) < Math.abs(this.value)
         this.value = value
-        let ba = value.toFixed(this.nAD).split('.')
-        let changes = this.setRollerSegment(this.dBD, ba[0], jump, backwards)
-        if (ba.length > 1) changes = changes.concat(this.setRollerSegment(this.dAD, ba[1], jump, backwards))
+        let ba = Math.abs(value).toFixed(this.nAD).split('.')
+        let changes = this.setRollerSegment(this.dBD, ba[0], this.value < 0, jump, backwards)
+        if (ba.length > 1) changes = changes.concat(this.setRollerSegment(this.dAD, ba[1], false, jump, backwards))
         if (!jump) {
             let flaps = 0
             let rolls = 0
@@ -118,20 +118,26 @@ const MechanicalCounter = function(parent, digitsBeforeDecimal, digitsAfterDecim
         this.setValue(0, true)
     }
 
-    this.setRollerSegment = function(rollers, s, jump, backwards) {
+    this.setRollerSegment = function(rollers, s, negative, jump, backwards) {
         let changes = []
         if (s.length < rollers.length) {
             s = ' '.repeat(rollers.length - s.length) + s
+        } else if (s.length > rollers.length) {
+            s = s.substring(s.length - rollers.length)
         }
-        for (let i = rollers.length - 1; i >= 0; i--) {
-            changes.push(rollers[i].go(s.charAt(i), jump, backwards))
+        for (let i = 0; i<rollers.length; i++) {
+            if (negative && i == 0) {
+                changes.push(rollers[i].go(-1, true, backwards))
+            } else {
+                changes.push(rollers[i].go(s.charAt(i), jump, backwards))
+            }
         }
         return changes
     }
 
     const Roller = function(div, s, wonkiness) {
 
-        this.C = '01234567890'
+        this.C = '\u201301234567890'
         this.div = div
         this.s = s
         this.wonkiness = wonkiness
@@ -149,7 +155,7 @@ const MechanicalCounter = function(parent, digitsBeforeDecimal, digitsAfterDecim
             rDiv.style['min-width'] = this.s.roller_width
             this.digitsDiv = U.a(rDiv, 'div', {class: 'counter_digits'})
             this.digitsDiv.style['font-size'] = this.s.font_size
-            this.go(' ', -1)
+            this.go(' ', true)
             for (let c of this.C) {
                 let d = U.a(this.digitsDiv, 'div', {class: 'counter_d'}, c)
                 d.style['height'] = this.s.digit_height
@@ -160,20 +166,24 @@ const MechanicalCounter = function(parent, digitsBeforeDecimal, digitsAfterDecim
             speed = speed || 0.13
             let oldPosition = this.position
             let changes = {flap: 0, roll: 0, roll_distance: 0}
-            if (('' + pos).trim().length != 1) {
-                this.position = -1
+            if (pos == ' ') {
+                this.position = -2
             } else {
-                this.position = parseInt(pos)
+                try {
+                    this.position = parseInt(pos)
+                } catch (e) {
+                    this.position = -2
+                }
             }
             if (oldPosition == this.position) return changes
             let oldWonkyPosition = this.wonkyPosition
             this.wonkyPosition = this.position + Math.random() * 2 * this.wonkiness - this.wonkiness
-            if (this.position == -1) {
+            if (this.position == -2) {
                 this.digitsDiv.style.visibility = 'hidden'
                 changes.flap = 1
                 return changes
             }
-            if (oldPosition == -1) changes.flap = 1
+            if (oldPosition == -2) changes.flap = 1
             this.digitsDiv.style.visibility = 'visible'
             if (jump) {
                 this.jumpPositions.push(this.wonkyPosition)
@@ -197,7 +207,7 @@ const MechanicalCounter = function(parent, digitsBeforeDecimal, digitsAfterDecim
             if (!this.jumpPositions.length) return
             let p = this.jumpPositions.shift()
             this.digitsDiv.style.transform =
-                'translateY(' + (5 * this.s.digit_height_px - p * this.s.digit_height_px) + 'px)'
+                'translateY(' + (4.5 * this.s.digit_height_px - p * this.s.digit_height_px) + 'px)'
             if (this.jumpPositions.length) setTimeout(this.moveCL, 10)
         }
 
