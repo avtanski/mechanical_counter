@@ -1,0 +1,46 @@
+
+.counter_wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.counter_wrapper div {
+    margin: 0px;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.counter_aperture {
+    background: #000;
+    display: flex;
+    overflow: hidden;
+}
+
+.counter_roller {
+    background: linear-gradient(0.5turn, #000, #333, #444, #333, #000);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.counter_decimal_point {
+    color: #FFF;
+    font-weight: bold;
+    background: #666;
+}
+
+.counter_digits {
+    display: flex;
+    flex-direction: column;
+    color: #FFF;
+    font-weight: bold;
+}
+
+.counter_d {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Time is Money</title>
+    <link rel="stylesheet" href="js/counter.css">
+    <script language="JavaScript" src="js/counter.js"></script>
+    <script language="JavaScript">
+        "use strict";
+
+        function init() {
+            let timer1 = new MechanicalCounter(document.getElementById('box1'), 4, 2)
+            timer1.setValue(123.45)
+            let timer2 = new MechanicalCounter(document.getElementById('box2'), 4, 2, 1)
+            timer2.setValue(123.45)
+            let timer3 = new MechanicalCounter(document.getElementById('box3'), 4, 2, 2)
+            timer3.setValue(123.45)
+        }
+    </script>
+</head>
+<body onload="init()" style="background: #FC0; padding: 20px;">
+<div class="box" id="box1" style="padding: 20px"></div>
+<div class="box" id="box2" style="padding: 20px"></div>
+<div class="box" id="box3" style="padding: 20px"></div>
+</body>
+</html>
