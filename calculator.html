@@ -136,9 +136,10 @@
             document.addEventListener(
                 'keydown',
                 function(e) {
-                    if (buttons[e.key] !== undefined) {
-                        buttons[e.key].classList.add('mechanical_button_active')
-                        buttons[e.key].click()
+                    let k = (e.key == 'Enter' || e.key == ' ') ? '=' : e.key
+                    if (buttons[k] !== undefined) {
+                        buttons[k].classList.add('mechanical_button_active')
+                        buttons[k].click()
                     }
                 }
             )
