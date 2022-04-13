@@ -78,6 +78,7 @@
                 case 'c':
                     if (operand == '') {
                         result = '0'
+                        operator = null
                     } else {
                         operand = ''
                     }
@@ -116,6 +117,7 @@
         }
 
         function calculate() {
+            console.log(result, operand)
             if (result == '' || operand == '') return
             let r = parseFloat(result)
             let o = parseFloat(operand)
