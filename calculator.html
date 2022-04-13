@@ -67,6 +67,9 @@
         }
 
         function action(e) {
+            click.pause()
+            click.currentTime = 0
+            click.muted = false
             click.play()
             let a = e.srcElement.getAttribute('action')
             e.srcElement.blur()
@@ -90,6 +93,7 @@
                 case '9':
                 case '.':
                     if (a == '.' && operand.indexOf('.') > -1) return
+                    if (operand == '') operand = '0'
                     operand += a
                     break
                 case '+':
@@ -106,6 +110,7 @@
                     operator = ''
                     break
             }
+            console.log(operand, result)
             resultCounter.setValue(result == '' ? 0 : result)
             operandCounter.setValue(operand == '' ? 0 : operand)
         }

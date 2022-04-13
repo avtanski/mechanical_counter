@@ -48,6 +48,11 @@
 
 .mechanical_button {
     background: linear-gradient(0.5turn, #444, #333, #000, #444);
+    border-style: solid;
+    border-top-color: #888;
+    border-left-color: #888;
+    border-right-color: #000;
+    border-bottom-color: #000;
     border-width: 5px;
     border-radius: 35px;
     height: 70px;
@@ -64,5 +69,9 @@
 }
 
 .mechanical_button:active, .mechanical_button_active {
+    border-top-color: #000;
+    border-left-color: #000;
+    border-right-color: #888;
+    border-bottom-color: #888;
     color: #888;
 }
