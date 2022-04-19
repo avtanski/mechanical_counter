@@ -23,12 +23,12 @@ counter.setValue(123.45)
   ```
   MechanicalCounter(
       parentElement,          // DOM element to create the counter in
-      digitsBeforeDecimal,    // number of digits left of the decimal point, int
-      digitsAfterDecimal,     // number of digits right of the decimal point, int
-      audioFilesPath,         // path to audio effect files, string
-      size,                   // [optional] counter size (0=big, 1=medium, 2=small), int
-      decimalPointCharacter,  // [optional] decimal point character, default is ","
-      wonkiness               // [optional] roller positioning accuracy, float, default=0.1
+      digitsBeforeDecimal,    // number of digits left of the decimal point [integer]
+      digitsAfterDecimal,     // number of digits right of the decimal point [integer]
+      audioFilesPath,         // path to audio effect files [string]
+      size,                   // [optional] counter size (0=big, 1=medium, 2=small), [integer]
+      decimalPointCharacter,  // [optional] decimal point characteri, default is "," [char]
+      wonkiness               // [optional] roller positioning accuracy, default=0.1 [float]
                               //            (0=perfectly accurate; 1=might be a whole digit off)
   )
   ```
@@ -37,8 +37,8 @@ counter.setValue(123.45)
 
   ```
   counter.setValue(
-      value,                  // the value to show, number
-      jump                    // if ``true``, do not animate the move, quietly set to the new value;
+      value,                  // the value to show [number]
+      jump                    // if true, do not animate the move, quietly set to the new value;
                               // otherwise, the counter will be animated and sound effects will be
                               // produced
   )
