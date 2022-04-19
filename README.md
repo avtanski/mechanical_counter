@@ -54,6 +54,7 @@ To see the counter in action, visit http://avtanski.net/projects/calc
 
 ## Known issues
 
+* In some browsers, audio requires user interaction with the page. This is a browser safety feature, not a bug.
 * Audio does not work correctly in Safari.
 
 
