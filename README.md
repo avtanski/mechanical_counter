@@ -1,4 +1,4 @@
-# A Wonky Mechanical Counter
+# A Wonky JavaScript Mechanical Counter
 
 This is a vanilla-javascript mechanical counter with zero dependencies.
 
