@@ -65,6 +65,6 @@ Alexander Avtanski, alex@avtanski.com
 
 ## License
 
-2022 (C) Alexander Avtanski <alex@avtanski.com>
+2022 Alexander Avtanski <alex@avtanski.com>
 
 This work is licensed under a Creative Commons Attribution 4.0 International License
