@@ -2,7 +2,7 @@
 
 This is a vanilla-javascript mechanical counter with zero dependencies.
 
-![Examples](docs/sizes.png)
+![Examples](sizes.png)
 
 All you need is for the counter are the ``mechctr.js`` and ``mechctr.css`` files.
 
